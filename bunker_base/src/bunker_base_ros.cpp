@@ -15,15 +15,15 @@
 namespace westonrobot {
 BunkerBaseRos::BunkerBaseRos(std::string node_name)
     : rclcpp::Node(node_name), keep_running_(false) {
-  this->declare_parameter("port_name");   
+  this->declare_parameter("port_name", rclcpp::ParameterValue("can0"));   
 
-  this->declare_parameter("odom_frame");
-  this->declare_parameter("base_frame");
-  this->declare_parameter("odom_topic_name");
+  this->declare_parameter("odom_frame", rclcpp::ParameterValue("odom"));
+  this->declare_parameter("base_frame", rclcpp::ParameterValue("base_link"));
+  this->declare_parameter("odom_topic_name", rclcpp::ParameterValue("odom"));
 
-  this->declare_parameter("is_bunker_mini");
-  this->declare_parameter("simulated_robot");
-  this->declare_parameter("control_rate");
+  this->declare_parameter("is_bunker_mini", rclcpp::ParameterValue(false));
+  this->declare_parameter("simulated_robot", rclcpp::ParameterValue(false));
+  this->declare_parameter("control_rate", rclcpp::ParameterValue(50));
 
   LoadParameters();
 }
