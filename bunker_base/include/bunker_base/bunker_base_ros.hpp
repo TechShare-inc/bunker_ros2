@@ -31,7 +31,7 @@ class BunkerBaseRos : public rclcpp::Node {
   std::string odom_frame_;
   std::string base_frame_;
   std::string odom_topic_name_;
-
+  std::string namespace_;
   bool is_bunker_mini_ = false;
   bool publish_odom_ = true;
   // bool is_omni_wheel_ = false;

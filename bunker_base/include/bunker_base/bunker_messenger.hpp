@@ -41,16 +41,22 @@ class BunkerMessenger {
     sim_control_rate_ = loop_rate;
   }
 
-  void SetupSubscription() {
+  void SetupSubscription(const std::string& namespace_ = "") {
     // odometry publisher
+
+    std::string odom_topic = namespace_ + "/" + odom_topic_name_;
+    std::string status_topic =  namespace_ +"/bunker_status";
+    std::string cmd_vel_topic =  namespace_ +"/cmd_vel";
+    std::string light_control_topic = namespace_ + "/light_control";
+
     odom_pub_ =
-        node_->create_publisher<nav_msgs::msg::Odometry>(odom_topic_name_, 50);
+        node_->create_publisher<nav_msgs::msg::Odometry>(odom_topic, 50);
     status_pub_ = node_->create_publisher<bunker_msgs::msg::BunkerStatus>(
-        "/bunker_status", 10);
+        status_topic, 10);
 
     // cmd subscriber
     motion_cmd_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
-        "/cmd_vel", 5,
+        cmd_vel_topic, 5,
         std::bind(&BunkerMessenger::TwistCmdCallback, this,
                   std::placeholders::_1));
     // light_cmd_sub_ = node_->create_subscription<bunker_msgs::msg::BunkerLightCmd>(
@@ -61,7 +67,7 @@ class BunkerMessenger {
     tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
   }
 
-  void PublishStateToROS() {
+  void PublishStateToROS(bool &publish_odom) {
     current_time_ = node_->get_clock()->now();
 
     static bool init_run = true;
@@ -117,7 +123,8 @@ class BunkerMessenger {
     status_pub_->publish(status_msg);
 
     // publish odometry and tf
-    PublishOdometryToROS(state.motion_state, dt);
+    if (publish_odom)
+      PublishOdometryToROS(state.motion_state, dt);
 
     // record time for next integration
     last_time_ = current_time_;

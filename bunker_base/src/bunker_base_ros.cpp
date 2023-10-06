@@ -19,6 +19,9 @@ BunkerBaseRos::BunkerBaseRos(std::string node_name)
 
   this->declare_parameter("odom_frame", rclcpp::ParameterValue("odom"));
   this->declare_parameter("base_frame", rclcpp::ParameterValue("base_link"));
+  this->declare_parameter("name_space", rclcpp::ParameterValue(""));
+
+  this->declare_parameter("publish_odom", rclcpp::ParameterValue(true));
   this->declare_parameter("odom_topic_name", rclcpp::ParameterValue("odom"));
 
   this->declare_parameter("is_bunker_mini", rclcpp::ParameterValue(false));
@@ -30,11 +33,12 @@ BunkerBaseRos::BunkerBaseRos(std::string node_name)
 
 void BunkerBaseRos::LoadParameters() {
   this->get_parameter_or<std::string>("port_name", port_name_, "can0");
+  this->get_parameter_or<bool>("publish_odom", publish_odom_, true);
+  this->get_parameter_or<std::string>("name_space", namespace_, "");
 
   this->get_parameter_or<std::string>("odom_frame", odom_frame_, "odom");
   this->get_parameter_or<std::string>("base_frame", base_frame_, "base_link");
-  this->get_parameter_or<std::string>("odom_topic_name", odom_topic_name_,
-                                      "odom");
+  this->get_parameter_or<std::string>("odom_topic_name", odom_topic_name_,  "odom");
   this->get_parameter_or<bool>("is_bunker_mini", is_bunker_mini_, false);
   this->get_parameter_or<bool>("simulated_robot", simulated_robot_, false);
   this->get_parameter_or<int>("control_rate", sim_control_rate_, 50);
@@ -44,6 +48,7 @@ void BunkerBaseRos::LoadParameters() {
   std::cout << "- odom frame name: " << odom_frame_ << std::endl;
   std::cout << "- base frame name: " << base_frame_ << std::endl;
   std::cout << "- odom topic name: " << odom_topic_name_ << std::endl;
+  std::cout << "- publish_odom: " << publish_odom_ << std::endl;
 
   std::cout << "- is bunker mini: " << std::boolalpha << is_bunker_mini_
             << std::endl;
@@ -114,11 +119,11 @@ void BunkerBaseRos::Run() {
   }
 
   // publish robot state at 50Hz while listening to twist commands
-  messenger->SetupSubscription();
+  messenger->SetupSubscription(namespace_);
   keep_running_ = true;
   rclcpp::Rate rate(50);
   while (keep_running_) {
-    messenger->PublishStateToROS();
+    messenger->PublishStateToROS(publish_odom_);
     rclcpp::spin_some(shared_from_this());
     rate.sleep();
   }
