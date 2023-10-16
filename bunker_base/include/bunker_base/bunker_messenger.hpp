@@ -59,6 +59,8 @@ class BunkerMessenger {
         cmd_vel_topic, 5,
         std::bind(&BunkerMessenger::TwistCmdCallback, this,
                   std::placeholders::_1));
+    std::cout << "SET SUBSCRIPTION" << std::endl;
+
     // light_cmd_sub_ = node_->create_subscription<bunker_msgs::msg::BunkerLightCmd>(
     //     "/light_control", 5,
     //     std::bind(&BunkerMessenger::LightCmdCallback, this,

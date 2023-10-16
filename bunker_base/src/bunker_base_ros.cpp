@@ -48,7 +48,8 @@ void BunkerBaseRos::LoadParameters() {
   std::cout << "- odom frame name: " << odom_frame_ << std::endl;
   std::cout << "- base frame name: " << base_frame_ << std::endl;
   std::cout << "- odom topic name: " << odom_topic_name_ << std::endl;
-  std::cout << "- publish_odom: " << publish_odom_ << std::endl;
+  std::cout << "- publish_odom: " << std::boolalpha <<   publish_odom_ << std::endl;
+  std::cout << "- name space: " <<  namespace_ << std::endl;
 
   std::cout << "- is bunker mini: " << std::boolalpha << is_bunker_mini_
             << std::endl;
